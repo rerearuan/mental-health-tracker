@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-25l-udnp!w+=5*1_qa(g8v8+k^#5end+r033f0grsc*xm=eq#d
 DEBUG = True
 
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "regina-meilani-mentalhealthtracker.pbp.cs.ui.id"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "https://pbp.cs.ui.ac.id/web/project/regina.meilani/mentalhealthtracker4", "https://pbp.cs.ui.ac.id/web/project/regina.meilani/mentalhealthtracker4"]
 
 
 
@@ -57,7 +57,7 @@ ROOT_URLCONF = 'mental_health_tracker.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'], # Tambahkan konten baris ini
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
