@@ -1,8 +1,11 @@
 import datetime
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.utils.html import strip_tags
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render, redirect, reverse
@@ -13,12 +16,11 @@ from django.core import serializers
 
 @login_required(login_url='/login')
 def show_main(request):
-    mood_entries = MoodEntry.objects.filter(user=request.user)
+    data = MoodEntry.objects.filter(user=request.user)
     context = {
         'npm' : '2306275632',
         'name': request.user.username,
         'class': 'PBP E',
-        'mood_entries': mood_entries,
         'last_login': request.COOKIES['last_login'],
     }
 
@@ -74,6 +76,8 @@ def login_user(request):
             response = HttpResponseRedirect(reverse("main:show_main"))
             response.set_cookie('last_login', str(datetime.datetime.now()))
             return response
+      else:
+            messages.error(request, "Invalid username or password. Please try again.")
 
    else:
       form = AuthenticationForm(request)
@@ -106,7 +110,21 @@ def delete_mood(request, id):
     # Kembali ke halaman awal
     return HttpResponseRedirect(reverse('main:show_main'))
 
+@csrf_exempt
+@require_POST
+def add_mood_entry_ajax(request):
+    mood = strip_tags(request.POST.get("mood")) # strip HTML tags!
+    feelings = strip_tags(request.POST.get("feelings"))
+    mood_intensity = request.POST.get("mood_intensity")
+    user = request.user
 
+    new_mood = MoodEntry(
+        mood=mood, feelings=feelings,
+        mood_intensity=mood_intensity,
+        user=user
+    )
+    new_mood.save()
 
+    return HttpResponse(b"CREATED", status=201)
 
 
